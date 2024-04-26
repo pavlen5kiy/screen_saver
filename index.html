@@ -1,10 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Gradient Waves</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Andale Mono, monospace; /* Set font family to Andale Mono */
+            text-align: center;
+            color: orange; /* Set clock color to orange */
+            background-color: black; /* Added background color for better visibility */
+        }
+        canvas {
+            display: block;
+        }
+        #clock {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px; /* Increased font size for better visibility */
+        }
+        #date {
+            position: absolute;
+            top: calc(50% - 50px); /* Adjust position above the clock */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px; /* Font size for the date */
+        }
+    </style>
 </head>
 <body>
-$END$
+    <div id="date"></div>
+    <div id="clock"></div>
+    <canvas id="canvas"></canvas>
+    <script>
+        // Get the canvas element
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas dimensions
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Define color transition variables
+        let red = 200;
+        let green = 100;
+        let blue = 200;
+        let delta = 1; // Change in color value
+        let increasing = true; // Direction of color change
+
+        // Render function to draw the gradient
+        function render() {
+            // Create a linear gradient
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+
+            // Set color stops with interpolated values
+            gradient.addColorStop(0, `rgb(${red}, ${green}, ${blue})`);
+            gradient.addColorStop(1, `rgb(${blue}, ${green}, ${red}`);
+
+            // Fill the canvas with the gradient
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Animation loop
+        function animate() {
+            // Update color values based on direction
+            if (increasing) {
+                red -= delta;
+                blue += delta;
+            } else {
+                red += delta;
+                blue -= delta;
+            }
+
+            // Check if color values reach the limits
+            if (red <= 0 && blue >= 255) {
+                increasing = false;
+            } else if (red >= 255 && blue <= 0) {
+                increasing = true;
+            }
+
+            // Render the gradient
+            render();
+
+            // Call animate function recursively at 30 fps
+            setTimeout(animate, 1000 / 30);
+        }
+
+        // Start the animation
+        animate();
+
+        // Update clock function
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const clockDisplay = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('clock').textContent = clockDisplay;
+
+            // Get the date and weekday
+            const dateDisplay = `${now.toDateString()}`;
+
+            // Update the date display
+            document.getElementById('date').textContent = dateDisplay;
+
+            setTimeout(updateClock, 1000); // Update every second
+        }
+
+        // Start updating the clock
+        updateClock();
+    </script>
 </body>
 </html>
